@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { chatSession } from "@/utils/GeminiAIModel";
 
 const AddNewInterview = () => {
   const [openDailog, setOpenDailog] = useState(false);
@@ -18,11 +19,43 @@ const AddNewInterview = () => {
   const [jobDesc, setJobDesc] = useState();
   const [jobExperience, setJobExperience] = useState();
 
-  const formSubmit=(e)=>{
-    e.preventDefault()
-    console.log(jobDesc,jobPosition,jobExperience,"yht9gtr")
-  }
-
+  const formSubmit = async (e) => {
+    e.preventDefault();
+    console.log(jobDesc, jobPosition, jobExperience, "yht9gtr");
+  
+    const InputPrompt =
+      "Job Position: " +
+      jobPosition +
+      ", Job Description: " +
+      jobDesc +
+      ", Years of Experience: " +
+      jobExperience +
+      ", Depends on the Job Position, Job Description and the Years of Experience give us " +
+      process.env.NEXT_PUBLIC_INTERVIEW_QUESTIONS_COUNT +
+      " interview questions along with the answers in JSON format. Provide a 'question' and 'answer' field in the JSON.";
+  
+    try {
+      const result = await chatSession.sendMessage(InputPrompt);
+      
+      // Log the entire response for debugging
+      console.log("Full response:", result);
+  
+      if (result.response.candidates && result.response.candidates.length > 0) {
+        // Log the first candidate to inspect its structure
+        console.log("First candidate:", result.response.candidates[0]);
+  
+        // Extract the text, if available
+        const primaryResponse = result.response.candidates[0].text;
+        console.log("Primary Response:", primaryResponse);
+      } else {
+        console.warn("No candidates found in the response.");
+      }
+    } catch (error) {
+      console.error("Error fetching interview questions:", error);
+    }
+  };
+  
+  
   return (
     <div>
       <div
@@ -39,7 +72,7 @@ const AddNewInterview = () => {
               Tell us More About Your Job Interview
             </DialogTitle>
             <DialogDescription>
-              <form onSubmit={formSubmit }>
+              <form onSubmit={formSubmit}>
                 <div>
                   <h2>
                     Add Details about your job position/role, Job Description
@@ -72,17 +105,17 @@ const AddNewInterview = () => {
                     />
                   </div>
                 </div>
-                
-              <div className="flex gap-5 justify-end">
-                <Button
-                  variant="ghost"
-                  type="button"
-                  onClick={() => setOpenDailog(false)}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit">Start Interview</Button>
-              </div>
+
+                <div className="flex gap-5 justify-end">
+                  <Button
+                    variant="ghost"
+                    type="button"
+                    onClick={() => setOpenDailog(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit">Start Interview</Button>
+                </div>
               </form>
             </DialogDescription>
           </DialogHeader>
