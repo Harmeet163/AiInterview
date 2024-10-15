@@ -53,6 +53,9 @@ const AddNewInterview = () => {
     } catch (error) {
       console.error("Error fetching interview questions:", error);
     }
+    const result = await chatSession.sendMessage(InputPrompt)
+    const MockJsonResp=(result.response.text()).replace('```json','').replace('```','')
+    console.log(result.response.text())
   };
   
   
