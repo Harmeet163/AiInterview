@@ -12,17 +12,26 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { chatSession } from "@/utils/GeminiAIModel";
+import { LoaderCircle } from "lucide-react";
+import { db } from "@/utils/db";
+import { MockInterview } from "@/utils/schema";
+import { v4 as uuidv4} from 'uuid';
+import { useUser } from "@clerk/nextjs";
 
 const AddNewInterview = () => {
   const [openDailog, setOpenDailog] = useState(false);
   const [jobPosition, setJobPosition] = useState();
   const [jobDesc, setJobDesc] = useState();
   const [jobExperience, setJobExperience] = useState();
+  const [loading, setLoading] = useState(false);
+  const [jsonResponce, setJsonResponce]= useState([])
+  const {user}=useUser
 
   const formSubmit = async (e) => {
+    setLoading(true);
     e.preventDefault();
     console.log(jobDesc, jobPosition, jobExperience, "yht9gtr");
-  
+
     const InputPrompt =
       "Job Position: " +
       jobPosition +
@@ -33,32 +42,46 @@ const AddNewInterview = () => {
       ", Depends on the Job Position, Job Description and the Years of Experience give us " +
       process.env.NEXT_PUBLIC_INTERVIEW_QUESTIONS_COUNT +
       " interview questions along with the answers in JSON format. Provide a 'question' and 'answer' field in the JSON.";
-  
-    try {
-      const result = await chatSession.sendMessage(InputPrompt);
+
+    // try {
+    //   const result = await chatSession.sendMessage(InputPrompt);
+
+    //   console.log("Full response:", result);
+
+    //   if (result.response.candidates && result.response.candidates.length > 0) {
+    //     console.log("First candidate:", result.response.candidates[0]);
+
+    //     const primaryResponse = result.response.candidates[0].text;
+    //     console.log("Primary Response:", primaryResponse);
+    //   } else {
+    //     console.warn("No candidates found in the response.");
+    //   }
+    // } catch (error) {
+    //   console.error("Error fetching interview questions:", error);
+    // }
+    const result = await chatSession.sendMessage(InputPrompt);
+    const MockJsonResp = result.response
+      .text()
+      .replace("```json", "")
+      .replace("```", "");
+    console.log(MockJsonResp,"this is on");
+    console.log(JSON.parse(MockJsonResp))
+    setJsonResponce(MockJsonResp);
+
+    const resp =await db.insert(MockInterview)
+    .values({
+      mockId: uuidv4(),
+      jsonMockResp:MockJsonResp,
+      jobPosition:jobPosition,
+      jobDesc:jobDesc,
+      jobExperience:jobExperience
       
-      // Log the entire response for debugging
-      console.log("Full response:", result);
-  
-      if (result.response.candidates && result.response.candidates.length > 0) {
-        // Log the first candidate to inspect its structure
-        console.log("First candidate:", result.response.candidates[0]);
-  
-        // Extract the text, if available
-        const primaryResponse = result.response.candidates[0].text;
-        console.log("Primary Response:", primaryResponse);
-      } else {
-        console.warn("No candidates found in the response.");
-      }
-    } catch (error) {
-      console.error("Error fetching interview questions:", error);
-    }
-    const result = await chatSession.sendMessage(InputPrompt)
-    const MockJsonResp=(result.response.text()).replace('```json','').replace('```','')
-    console.log(result.response.text())
+
+    })
+
+    setLoading(false);
   };
-  
-  
+
   return (
     <div>
       <div
@@ -117,7 +140,16 @@ const AddNewInterview = () => {
                   >
                     Cancel
                   </Button>
-                  <Button type="submit">Start Interview</Button>
+                  <Button type="submit" disabled={loading}>
+                    {loading ? (
+                      <>
+                        <LoaderCircle className="animate-spin" />
+                        'Generating From Ai '
+                      </>
+                    ) : (
+                      "Start Interview"
+                    )}
+                  </Button>
                 </div>
               </form>
             </DialogDescription>
