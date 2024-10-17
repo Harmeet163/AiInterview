@@ -67,22 +67,7 @@ const AddNewInterview = () => {
       .replace("```", "");
     setJsonResponce(MockJsonResp);
 
-    if(MockJsonResp){
-    // const resp =await db.insert(MockInterview)
-    // .values({
-    //   mockId: uuidv4(),
-    //   jsonMockResp:MockJsonResp,
-    //   jobPosition:jobPosition,
-    //   jobDesc:jobDesc,
-    //   jobExperience:jobExperience,
-    //   createdBy: user?.primaryEmailAddress?.emailAddress,
-    //   createdAt:moment().format('DD-MM-yyyy')
-    // }).returning({mockId:MockInterview.mockId})
-
-    console.log("this is id")
-  }else{
-    console.log("erroe")
-  }
+   console.log(JSON.parse(MockJsonResp))
 
     setLoading(false);
   };
