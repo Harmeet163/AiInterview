@@ -15,9 +15,10 @@ import { chatSession } from "@/utils/GeminiAIModel";
 import { LoaderCircle } from "lucide-react";
 import { db } from "@/utils/db";
 import { MockInterview } from "@/utils/schema";
-import { v4 as uuidv4} from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import { useUser } from "@clerk/nextjs";
 import moment from "moment";
+import { useRouter } from "next/navigation";
 
 const AddNewInterview = () => {
   const [openDailog, setOpenDailog] = useState(false);
@@ -25,8 +26,9 @@ const AddNewInterview = () => {
   const [jobDesc, setJobDesc] = useState();
   const [jobExperience, setJobExperience] = useState();
   const [loading, setLoading] = useState(false);
-  const [jsonResponce, setJsonResponce]= useState([])
-  const {user}=useUser
+  const [jsonResponce, setJsonResponce] = useState([]);
+  const { user } = useUser();
+  const router = useRouter();
 
   const formSubmit = async (e) => {
     setLoading(true);
@@ -44,22 +46,6 @@ const AddNewInterview = () => {
       process.env.NEXT_PUBLIC_INTERVIEW_QUESTIONS_COUNT +
       " interview questions along with the answers in JSON format. Provide a 'question' and 'answer' field in the JSON.";
 
-    // try {
-    //   const result = await chatSession.sendMessage(InputPrompt);
-
-    //   console.log("Full response:", result);
-
-    //   if (result.response.candidates && result.response.candidates.length > 0) {
-    //     console.log("First candidate:", result.response.candidates[0]);
-
-    //     const primaryResponse = result.response.candidates[0].text;
-    //     console.log("Primary Response:", primaryResponse);
-    //   } else {
-    //     console.warn("No candidates found in the response.");
-    //   }
-    // } catch (error) {
-    //   console.error("Error fetching interview questions:", error);
-    // }
     const result = await chatSession.sendMessage(InputPrompt);
     const MockJsonResp = result.response
       .text()
@@ -67,22 +53,28 @@ const AddNewInterview = () => {
       .replace("```", "");
     setJsonResponce(MockJsonResp);
 
-    if(MockJsonResp){
-    // const resp =await db.insert(MockInterview)
-    // .values({
-    //   mockId: uuidv4(),
-    //   jsonMockResp:MockJsonResp,
-    //   jobPosition:jobPosition,
-    //   jobDesc:jobDesc,
-    //   jobExperience:jobExperience,
-    //   createdBy: user?.primaryEmailAddress?.emailAddress,
-    //   createdAt:moment().format('DD-MM-yyyy')
-    // }).returning({mockId:MockInterview.mockId})
+    if (MockJsonResp) {
+      const resp = await db
+        .insert(MockInterview)
+        .values({
+          mockId: uuidv4(),
+          jsonMockResp: MockJsonResp,
+          jobPosition: jobPosition,
+          jobDesc: jobDesc,
+          jobExperience: jobExperience,
+          createdBy: user?.primaryEmailAddress?.emailAddress,
+          createdAt: moment().format("DD-MM-yyyy"),
+        })
+        .returning({ mockId: MockInterview.mockId });
 
-    console.log("this is id")
-  }else{
-    console.log("erroe")
-  }
+      console.log("this is id", resp);
+      if (resp) {
+        setOpenDailog(false);
+        router.push('/dashboard/interview/'+resp[0]?.mockId)
+      }
+    } else {
+      console.log("erroe");
+    }
 
     setLoading(false);
   };
