@@ -11,7 +11,7 @@ const QuestionsSections = ({ mockInterviewQuestions, activeQuestionIndex }) => {
               <h2
                 className={`p-2 bg-secondary rounded-full text-xs md:text-sm 
             text-center cursor-pointer 
-            ${activeQuestionIndex === index && "bg-[#35406B] text-white"}`}
+            ${activeQuestionIndex === index && "bg-[#33bbc5] text-black"}`}
               >
                 Question #{index + 1}
               </h2>
@@ -20,12 +20,12 @@ const QuestionsSections = ({ mockInterviewQuestions, activeQuestionIndex }) => {
         <h2 className="my-5 text-md  md:text-lg">
           {mockInterviewQuestions[activeQuestionIndex]?.question}
         </h2>
-        <div className="border rounded-lg p-5 bg-blue-100">
+        <div className="border rounded-lg p-5 bg-blue-100 mt-20">
           <h2 className="flex gap-2 items-center text-primary">
             <Lightbulb />
             <strong>Note:</strong>
           </h2>
-          <h2>
+          <h2 className="my-2 text-sm text-primary">
             {process.env.NEXT_PUBLIC_QUESTION_NOTE}
           </h2>
         </div>
