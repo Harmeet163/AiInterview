@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import { json } from "drizzle-orm/mysql-core";
 import React, { useEffect, useState } from "react";
 import QuestionsSections from "./_components/QuestionsSections";
+import RecordAnsSection from "./_components/RecordAnsSection";
 
 const StartInterview = ({ params }) => {
   const [interviewData, setInterviewData] = useState();
@@ -28,7 +29,7 @@ const StartInterview = ({ params }) => {
 
   return (
     <div>
-      <div className="grid grid-cols-1 md:grid-cols-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
         {/* Question */}
         <QuestionsSections
           mockInterviewQuestions={mockInterviewQuestions}
@@ -36,6 +37,7 @@ const StartInterview = ({ params }) => {
         />
 
         {/* Video Audio Rec */}
+        <RecordAnsSection/>
       </div>
     </div>
   );
