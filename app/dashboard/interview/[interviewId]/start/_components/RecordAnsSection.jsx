@@ -83,7 +83,7 @@ const RecordAnsSection = ({
     }
   };
 
-  
+
   return (
     <div className="flex flex-col justify-center items-center">
       <div className="flex flex-col mt-20 justify-center items-center p-5 rounded-lg bg-black">
@@ -118,7 +118,7 @@ const RecordAnsSection = ({
           "Record Answer"
         )}
       </Button>
-      <Button onClick={() => console.log(userAnswer)}>show answer</Button>
+      
     </div>
   );
 };

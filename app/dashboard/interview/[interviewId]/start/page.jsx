@@ -6,6 +6,7 @@ import { json } from "drizzle-orm/mysql-core";
 import React, { useEffect, useState } from "react";
 import QuestionsSections from "./_components/QuestionsSections";
 import RecordAnsSection from "./_components/RecordAnsSection";
+import { Button } from "@/components/ui/button";
 
 const StartInterview = ({ params }) => {
   const [interviewData, setInterviewData] = useState();
@@ -38,10 +39,29 @@ const StartInterview = ({ params }) => {
 
         {/* Video Audio Rec */}
         <RecordAnsSection
-         mockInterviewQuestions={mockInterviewQuestions}
-         activeQuestionIndex={activeQuestionIndex}
-         interviewData={interviewData}
+          mockInterviewQuestions={mockInterviewQuestions}
+          activeQuestionIndex={activeQuestionIndex}
+          interviewData={interviewData}
         />
+      </div>
+      <div className="flex justify-end gap-6">
+        {activeQuestionIndex > 0 && (
+          <Button
+            onClick={() => setActiveQuestionIndex(activeQuestionIndex - 1)}
+          >
+            Previous Question
+          </Button>
+        )}
+        {activeQuestionIndex != mockInterviewQuestions?.length - 1 && (
+          <Button
+            onClick={() => setActiveQuestionIndex(activeQuestionIndex + 1)}
+          >
+            Next Qestion
+          </Button>
+        )}
+        {activeQuestionIndex === mockInterviewQuestions?.length - 1 && (
+          <Button>End Interview</Button>
+        )}
       </div>
     </div>
   );
