@@ -27,6 +27,7 @@ const RecordAnsSection = ({
     results,
     startSpeechToText,
     stopSpeechToText,
+    setResults
   } = useSpeechToText({
     continuous: true,
     useLegacyResults: false,
@@ -74,8 +75,10 @@ const RecordAnsSection = ({
 
       if (resp) {
         toast("user answer recoed ");
+        setUserAnswer('')
+        setResults([])
       }
-      setUserAnswer('')
+      // setUserAnswer('')
 
       setLoading(false);
     } else {
